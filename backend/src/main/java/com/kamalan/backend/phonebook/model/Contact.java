@@ -17,7 +17,7 @@ import com.googlecode.objectify.annotation.Parent;
 public class Contact
 {
     @Id
-    private long id;
+    private Long id;
     @Index
     private String cName;
     private Email cEmail;
