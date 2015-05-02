@@ -3,7 +3,8 @@ package com.kamalan.backend.phonebook.service;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyFactory;
 import com.googlecode.objectify.ObjectifyService;
-import com.kamalan.backend.phonebook.model.MyUser;
+import com.kamalan.backend.phonebook.model.Contact;
+import com.kamalan.backend.phonebook.model.Profile;
 
 /**
  * Objectify service wrapper so we can statically register our persistence classes
@@ -15,7 +16,8 @@ public class OfyService
      * This static block ensure the entity registration.
      */
     static {
-        factory().register(MyUser.class);
+        factory().register(Profile.class);
+        factory().register(Contact.class);
     }
     /**
      * Use this static method for getting the Objectify service object in order to make sure the

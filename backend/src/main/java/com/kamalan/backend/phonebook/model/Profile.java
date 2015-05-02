@@ -5,18 +5,21 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Entity;
 import com.googlecode.objectify.annotation.Id;
 
+/**
+ * Created by Hesam Kamalan on 5/2/15
+ */
 @Entity
-public class MyUser
+public class Profile
 {
     @Id
     private String email;
     private User user;
 
-    private MyUser()
+    private Profile()
     {
     }
 
-    public MyUser(User user)
+    public Profile(User user)
     {
         this.user = user;
         this.email = user.getEmail();
@@ -27,9 +30,8 @@ public class MyUser
         return user;
     }
 
-    public Key<MyUser> getKey()
+    public Key<Profile> getKey()
     {
-        return Key.create(MyUser.class, email);
+        return Key.create(Profile.class, email);
     }
-
 }

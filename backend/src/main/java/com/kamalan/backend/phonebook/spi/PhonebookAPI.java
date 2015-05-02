@@ -4,13 +4,18 @@ import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.kamalan.backend.phonebook.Constants;
-import com.kamalan.backend.phonebook.model.MyUser;
+import com.kamalan.backend.phonebook.model.ContactForm;
+import com.kamalan.backend.phonebook.model.Profile;
+import com.kamalan.backend.phonebook.model.Contact;
 import com.kamalan.backend.phonebook.utility.WrappedString;
 
+import java.util.List;
 import java.util.logging.Logger;
 
+import static com.kamalan.backend.phonebook.service.OfyService.factory;
 import static com.kamalan.backend.phonebook.service.OfyService.ofy;
 
 /**
@@ -25,19 +30,76 @@ import static com.kamalan.backend.phonebook.service.OfyService.ofy;
         description = "Phonebook API for the GAE Backend application.")
 public class PhonebookAPI
 {
+    private static final String TAG = PhonebookAPI.class.getSimpleName();
+    private static final String MSG_AUTH_ERROR = "Authorization required";
 
-    @ApiMethod(name = "createPhonebook", path = "phonebook", httpMethod = ApiMethod.HttpMethod.POST)
-    public WrappedString createPhonebook(final User user) throws UnauthorizedException
+    @ApiMethod(name = "createContact", path = "contact", httpMethod = ApiMethod.HttpMethod.POST)
+    public Contact createContact(final User user, final ContactForm contactForm) throws UnauthorizedException
     {
         // If the user is not logged in, throw an UnauthorizedException
         if (user == null)
         {
-            throw new UnauthorizedException("Authorization required");
+            throw new UnauthorizedException(PhonebookAPI.MSG_AUTH_ERROR);
         }
 
-        // Return userId
+        // Get user id
+        final String userId = getUserId(user);
+
+        // Get the key for the user's profile
+        Key<Profile> profileKey = Key.create(Profile.class, userId);
+
+        // Allocate a key for the conference
+        final Key<Contact> contactKey = factory().allocateId(profileKey, Contact.class);
+
+        // Get the contact Id from the key
+        final long contactId = contactKey.getId();
+
+        // Get the existing Profile entity for the current user if there is one
+        // Otherwise create a new Profile entity with default values
+        Profile profile = getProfileFromUser(user);
+
+        // Create a new Contact Entity, specifying the user's Profile entity
+        // as the parent of the Contact
+        Contact contact = new Contact(contactId, userId, contactForm);
+
+        // Save Contact and Profile Entities
+        ofy().save().entities(contact, profile).now();
+
+        return contact;
+    }
+
+    @ApiMethod(name = "getContactsCreated", path = "contact", httpMethod = ApiMethod.HttpMethod.GET)
+    public List<Contact> getContactsCreated(final User user) throws UnauthorizedException
+    {
+        // If the user is not logged in, throw an UnauthorizedException
+        if (user == null)
+        {
+            throw new UnauthorizedException(PhonebookAPI.MSG_AUTH_ERROR);
+        }
+
         String userId = getUserId(user);
-        return new WrappedString(userId);
+        Key<Profile> userKey = Key.create(Profile.class, userId);
+
+        return ofy().load().type(Contact.class).ancestor(userKey).order("cName").list();
+    }
+
+    /**
+     * Gets the Profile entity for the current user or creates it if it doesn't exist
+     *
+     * @param user
+     * @return user's Profile
+     */
+    private static Profile getProfileFromUser(User user)
+    {
+        // First fetch the user's Profile from the data-store.
+        Profile profile = ofy().load().key(Key.create(Profile.class, getUserId(user))).now();
+        if (profile == null)
+        {
+            // Create a new Profile if it doesn't exist.
+            profile =  new Profile(user);
+        }
+
+        return profile;
     }
 
     /**
@@ -51,19 +113,18 @@ public class PhonebookAPI
         String userId = user.getUserId();
         if (userId == null)
         {
-            Logger.getLogger("userId is null, so trying to obtain it from the datastore.");
+            Logger.getLogger("userId is null, so trying to obtain it from the data-store.");
 
-            MyUser myUser = new MyUser(user);
-            ofy().save().entity(myUser).now();
+            Profile profile = new Profile(user);
+            ofy().save().entity(profile).now();
 
             // Begin new session for not using session cache.
             Objectify objectify = ofy().factory().begin();
-            MyUser savedUser = objectify.load().key(myUser.getKey()).now();
+            Profile savedUser = objectify.load().key(profile.getKey()).now();
             userId = savedUser.getUser().getUserId();
 
             Logger.getLogger("Obtained the userId: " + userId);
         }
-
         return userId;
     }
 }
