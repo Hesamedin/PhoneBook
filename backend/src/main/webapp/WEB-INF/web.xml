@@ -8,7 +8,7 @@
 
         <init-param>
             <param-name>services</param-name>
-            <param-value>com.kamalan.backend.phonebook.model.spi.PhonebookAPI</param-value>
+            <param-value>com.kamalan.backend.phonebook.spi.PhonebookAPI</param-value>
         </init-param>
     </servlet>
     <servlet-mapping>
