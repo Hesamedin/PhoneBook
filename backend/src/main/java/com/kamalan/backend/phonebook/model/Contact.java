@@ -78,6 +78,18 @@ public class Contact
         return cPhoneNumber;
     }
 
+    public void setcName(String cName) {
+        this.cName = cName;
+    }
+
+    public void setcEmail(Email cEmail) {
+        this.cEmail = cEmail;
+    }
+
+    public void setcPhoneNumber(PhoneNumber cPhoneNumber) {
+        this.cPhoneNumber = cPhoneNumber;
+    }
+
     @ApiResourceProperty(ignored = AnnotationBoolean.TRUE)
     public Key<Profile> getProfileKey() {
         return profileKey;

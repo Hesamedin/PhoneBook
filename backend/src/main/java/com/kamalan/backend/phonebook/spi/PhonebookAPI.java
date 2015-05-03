@@ -3,18 +3,14 @@ package com.kamalan.backend.phonebook.spi;
 import com.google.api.server.spi.config.Api;
 import com.google.api.server.spi.config.ApiMethod;
 import com.google.api.server.spi.config.Named;
-import com.google.api.server.spi.response.ForbiddenException;
 import com.google.api.server.spi.response.UnauthorizedException;
 import com.google.appengine.api.users.User;
 import com.googlecode.objectify.Key;
-import com.googlecode.objectify.NotFoundException;
 import com.googlecode.objectify.Objectify;
-import com.googlecode.objectify.Work;
 import com.kamalan.backend.phonebook.Constants;
 import com.kamalan.backend.phonebook.model.Contact;
 import com.kamalan.backend.phonebook.model.ContactForm;
 import com.kamalan.backend.phonebook.model.Profile;
-import com.kamalan.backend.phonebook.utility.WrappedBoolean;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -88,7 +84,8 @@ public class PhonebookAPI
     }
 
     @ApiMethod(name = "deleteContact", path = "contact", httpMethod = ApiMethod.HttpMethod.DELETE)
-    public void deleteContact(final User user, final @Named("contactId") long contactId)  throws UnauthorizedException
+    public void deleteContact(final User user, final @Named("contactId") long contactId)
+            throws UnauthorizedException
     {
         // If the user is not logged in, throw an UnauthorizedException
         if (user == null)
@@ -102,10 +99,24 @@ public class PhonebookAPI
         ofy().delete().type(Contact.class).parent(profileKey).id(contactId).now();
     }
 
-    @ApiMethod(name = "deleteProfile", path = "profile", httpMethod = ApiMethod.HttpMethod.DELETE)
-    public void deleteProfile(final @Named("email") String email)
+    @ApiMethod(name = "updateContact", path = "contact", httpMethod = ApiMethod.HttpMethod.PUT)
+    public void updateContact(final User user, final @Named("contactId") long contactId,
+                              final ContactForm contactForm) throws UnauthorizedException
     {
-        ofy().delete().type(Profile.class).id(email).now();
+        // If the user is not logged in, throw an UnauthorizedException
+        if (user == null) {
+            throw new UnauthorizedException(PhonebookAPI.MSG_AUTH_ERROR);
+        }
+
+        String userId = getUserId(user);
+        Key<Profile> profileKey = Key.create(Profile.class, userId);
+
+        Contact contact = ofy().load().type(Contact.class).parent(profileKey).id(contactId).now();
+        contact.setcName(contactForm.getUserName());
+        contact.setcEmail(contactForm.getUserEmailAddress());
+        contact.setcPhoneNumber(contactForm.getUserPhoneNumber());
+
+        ofy().save().entities(contact).now();
     }
 
     /**
