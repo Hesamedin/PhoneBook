@@ -1,6 +1,12 @@
 <resources>
     <string name="app_name">Phonebook</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="contact_call">Call</string>
+    <string name="contact_sms">SMS</string>
+    <string name="contact_email">Email</string>
+    <string name="contact_edit">Edit</string>
+
     <string name="action_settings">Settings</string>
+
+    <string name="imageView">imageView</string>
 </resources>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cvContact"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="4dp"
+    card_view:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/background">
+
+        <TextView
+            android:id="@+id/tvContactName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/accent"
+            android:gravity="start|center_vertical"
+            android:padding="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="19sp" />
+
+        <TextView
+            android:id="@+id/tvContactDetails"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvContactName"
+            android:background="@color/accent"
+            android:gravity="start|center_vertical"
+            android:paddingBottom="8dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:textColor="@android:color/white"
+            android:textSize="15sp"
+            android:textStyle="italic" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvContactDetails">
+
+            <Button
+                android:id="@+id/btnContactCall"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:onClick="onClick"
+                android:text="@string/contact_call"
+                android:textAllCaps="true"
+                android:textColor="@color/textColor"
+                android:textSize="13sp"/>
+
+            <Button
+                android:id="@+id/btnContactSMS"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:onClick="onClick"
+                android:text="@string/contact_sms"
+                android:textAllCaps="true"
+                android:textColor="@color/textColor"
+                android:textSize="13sp"/>
+
+            <Button
+                android:id="@+id/btnContactEmail"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:onClick="onClick"
+                android:text="@string/contact_email"
+                android:textAllCaps="true"
+                android:textColor="@color/textColor"
+                android:textSize="13sp"/>
+
+            <Button
+                android:id="@+id/btnContactEdit"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:layout_margin="4dp"
+                android:onClick="onClick"
+                android:text="@string/contact_edit"
+                android:textAllCaps="true"
+                android:textColor="@color/textColor"
+                android:textSize="13sp"/>
+
+        </LinearLayout>
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>
