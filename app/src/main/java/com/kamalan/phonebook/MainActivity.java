@@ -22,6 +22,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import com.kamalan.phonebook.endpoint.ContactListEndpoint;
 import com.kamalan.phonebook.endpoint.CreateContactEndpoint;
 import com.kamalan.phonebook.endpoint.DeleteContactEndpoint;
+import com.kamalan.phonebook.endpoint.UpdateContactEndpoint;
 import com.kamalan.phonebook.utility.Storage;
 
 import java.util.ArrayList;
@@ -56,8 +57,7 @@ public class MainActivity extends FragmentActivity implements
         this.mRecyclerView.setAdapter(this.mContactAdapter);
 
         // Get Google account credentials
-        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this,
-                "server:my-phonebook-123:1-web-app.apps.googleusercontent.com");
+        GoogleAccountCredential credential = GoogleAccountCredential.usingAudience(this, "server:my-phonebook-123:1-web-app.apps.googleusercontent.com");
         String accountName = Storage.getAccountName(this);
         credential.setSelectedAccountName(accountName);
         if (credential.getSelectedAccountName() != null)
@@ -164,7 +164,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     *  Load list of Contacts from App Engine
+     * Load list of Contacts from App Engine
      */
     public void getContacts()
     {
@@ -210,82 +210,71 @@ public class MainActivity extends FragmentActivity implements
      */
     private void displayCreateContactDialog()
     {
-        new MaterialDialog.Builder(this)
-                .title(R.string.dialog_title_create)
-                .customView(R.layout.dialog_contact, true)
-                .positiveText(R.string.dialog_btn_create)
-                .neutralText(R.string.dialog_btn_cancel)
-                .callback(new MaterialDialog.ButtonCallback()
+        new MaterialDialog.Builder(this).title(R.string.dialog_title_create).customView(R.layout.dialog_contact, true).positiveText(R.string.dialog_btn_create).neutralText(R.string.dialog_btn_cancel).callback(new MaterialDialog.ButtonCallback()
+        {
+            @Override
+            public void onPositive(MaterialDialog dialog)
+            {
+                super.onPositive(dialog);
+
+                final ContactForm contactForm = getContactFromDialog(dialog);
+
+                // Create contact
+                if (contactForm != null)
                 {
-                    @Override
-                    public void onPositive(MaterialDialog dialog)
-                    {
-                        super.onPositive(dialog);
+                    new CreateContactEndpoint(MainActivity.this, contactForm).execute();
+                }
 
-                        final ContactForm contactForm = new ContactForm();
+                // close dialog
+                dialog.dismiss();
+            }
 
-                        TextView tvContactName = (TextView) dialog.getCustomView().findViewById(R.id.etContactName);
-                        contactForm.setUserName(tvContactName.getText().toString().trim());
-
-                        TextView tvContactEmail = (TextView) dialog.getCustomView().findViewById(R.id.etContactEmail);
-                        Email email = new Email();
-                        email.setEmail(tvContactEmail.getText().toString().trim());
-                        contactForm.setUserEmailAddress(email);
-
-                        TextView tvContactPhone = (TextView) dialog.getCustomView().findViewById(R.id.etContactPhone);
-                        PhoneNumber phoneNumber = new PhoneNumber();
-                        phoneNumber.setNumber(tvContactPhone.getText().toString().trim());
-                        contactForm.setUserPhoneNumber(phoneNumber);
-
-                        dialog.dismiss();
-
-                        // Create contact
-                        new CreateContactEndpoint(MainActivity.this, contactForm).execute();
-                    }
-
-                    @Override
-                    public void onNeutral(MaterialDialog dialog)
-                    {
-                        super.onNeutral(dialog);
-                        dialog.dismiss();
-                    }
-                })
-                .show();
+            @Override
+            public void onNeutral(MaterialDialog dialog)
+            {
+                super.onNeutral(dialog);
+                dialog.dismiss();
+            }
+        }).show();
     }
 
     private void displayEditContactDialog(final Contact contact)
     {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title(R.string.dialog_title_edit)
-                .customView(R.layout.dialog_contact, true)
-                .positiveText(R.string.dialog_btn_update)
-                .neutralText(R.string.dialog_btn_cancel)
-                .negativeText(R.string.dialog_btn_delete)
-                .callback(new MaterialDialog.ButtonCallback()
+        MaterialDialog dialog = new MaterialDialog.Builder(this).title(R.string.dialog_title_edit).customView(R.layout.dialog_contact, true).positiveText(R.string.dialog_btn_update).neutralText(R.string.dialog_btn_cancel).negativeText(R.string.dialog_btn_delete).callback(new MaterialDialog.ButtonCallback()
+        {
+            @Override
+            public void onPositive(MaterialDialog dialog)
+            {
+                super.onPositive(dialog);
+
+                final ContactForm contactForm = getContactFromDialog(dialog);
+
+                // Create contact
+                if (contactForm != null)
                 {
-                    @Override
-                    public void onPositive(MaterialDialog dialog)
-                    {
-                        super.onPositive(dialog);
-                    }
+                    new UpdateContactEndpoint(MainActivity.this, contact.getId(), contactForm).execute();
+                }
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog)
-                    {
-                        super.onNegative(dialog);
+                // close dialog
+                dialog.dismiss();
+            }
 
-                        // Delete contact
-                        new DeleteContactEndpoint(MainActivity.this, contact.getId()).execute();
-                    }
+            @Override
+            public void onNegative(MaterialDialog dialog)
+            {
+                super.onNegative(dialog);
 
-                    @Override
-                    public void onNeutral(MaterialDialog dialog)
-                    {
-                        super.onNeutral(dialog);
-                        dialog.dismiss();
-                    }
-                })
-                .build();
+                // Delete contact
+                new DeleteContactEndpoint(MainActivity.this, contact.getId()).execute();
+            }
+
+            @Override
+            public void onNeutral(MaterialDialog dialog)
+            {
+                super.onNeutral(dialog);
+                dialog.dismiss();
+            }
+        }).build();
 
         View view = dialog.getCustomView();
         TextView tvContactName = (TextView) view.findViewById(R.id.etContactName);
@@ -299,5 +288,30 @@ public class MainActivity extends FragmentActivity implements
 
         // display dialog
         dialog.show();
+    }
+
+    private ContactForm getContactFromDialog(MaterialDialog dialog)
+    {
+        if (dialog == null)
+        {
+            return null;
+        }
+
+        final ContactForm contactForm = new ContactForm();
+
+        TextView tvContactName = (TextView) dialog.getCustomView().findViewById(R.id.etContactName);
+        contactForm.setUserName(tvContactName.getText().toString().trim());
+
+        TextView tvContactEmail = (TextView) dialog.getCustomView().findViewById(R.id.etContactEmail);
+        Email email = new Email();
+        email.setEmail(tvContactEmail.getText().toString().trim());
+        contactForm.setUserEmailAddress(email);
+
+        TextView tvContactPhone = (TextView) dialog.getCustomView().findViewById(R.id.etContactPhone);
+        PhoneNumber phoneNumber = new PhoneNumber();
+        phoneNumber.setNumber(tvContactPhone.getText().toString().trim());
+        contactForm.setUserPhoneNumber(phoneNumber);
+
+        return contactForm;
     }
 }
