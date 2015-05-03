@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.appspot.my_phonebook_123.phonebookAPI.model.Contact;
 import com.appspot.my_phonebook_123.phonebookAPI.model.ContactForm;
 import com.appspot.my_phonebook_123.phonebookAPI.model.Email;
@@ -93,12 +94,7 @@ public class MainActivity extends FragmentActivity implements
         // add contact dialog
         if (id == R.id.action_add_contact)
         {
-            ContactForm form = new ContactForm();
-            form.setUserName("Name 1");
-            form.setUserEmailAddress(new Email().setEmail("name1@example.com"));
-            form.setUserPhoneNumber(new PhoneNumber().setNumber("123456"));
-
-            new CreateContactEndpoint(this, form).execute();
+            displayCreateContactDialog();
             return true;
         }
 
@@ -139,7 +135,7 @@ public class MainActivity extends FragmentActivity implements
     @Override
     public void onContactEditClicked(Contact contact)
     {
-
+        displayEditContactDialog(contact);
     }
 
     @Override
@@ -198,12 +194,93 @@ public class MainActivity extends FragmentActivity implements
      *
      * @param contact
      */
-    public void onContactCreated(Contact contact)
+    public void onContactCreated(final Contact contact)
     {
         if (contact != null)
         {
             Log.d(TAG, contact.toString());
             getContacts();
         }
+    }
+
+    /**
+     * Opens a dialog, let the user to add contact detail and finally tries to create contact
+     * by sending request to CreateContactEndpoint.
+     */
+    private void displayCreateContactDialog()
+    {
+        new MaterialDialog.Builder(this)
+                .title(R.string.dialog_title_create)
+                .customView(R.layout.dialog_contact, true)
+                .positiveText(R.string.dialog_btn_create)
+                .neutralText(R.string.dialog_btn_cancel)
+                .callback(new MaterialDialog.ButtonCallback()
+                {
+                    @Override
+                    public void onPositive(MaterialDialog dialog)
+                    {
+                        super.onPositive(dialog);
+
+                        final ContactForm contactForm = new ContactForm();
+
+                        TextView tvContactName = (TextView) dialog.getCustomView().findViewById(R.id.etContactName);
+                        contactForm.setUserName(tvContactName.getText().toString().trim());
+
+                        TextView tvContactEmail = (TextView) dialog.getCustomView().findViewById(R.id.etContactEmail);
+                        Email email = new Email();
+                        email.setEmail(tvContactEmail.getText().toString().trim());
+                        contactForm.setUserEmailAddress(email);
+
+                        TextView tvContactPhone = (TextView) dialog.getCustomView().findViewById(R.id.etContactPhone);
+                        PhoneNumber phoneNumber = new PhoneNumber();
+                        phoneNumber.setNumber(tvContactPhone.getText().toString().trim());
+                        contactForm.setUserPhoneNumber(phoneNumber);
+
+                        dialog.dismiss();
+
+                        // Create contact
+                        new CreateContactEndpoint(MainActivity.this, contactForm).execute();
+                    }
+
+                    @Override
+                    public void onNeutral(MaterialDialog dialog)
+                    {
+                        super.onNeutral(dialog);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void displayEditContactDialog(final Contact contact)
+    {
+        new MaterialDialog.Builder(this)
+                .title(R.string.dialog_title_edit)
+                .customView(R.layout.dialog_contact, true)
+                .positiveText(R.string.dialog_btn_update)
+                .neutralText(R.string.dialog_btn_cancel)
+                .negativeText(R.string.dialog_btn_delete)
+                .callback(new MaterialDialog.ButtonCallback()
+                {
+                    @Override
+                    public void onPositive(MaterialDialog dialog)
+                    {
+                        super.onPositive(dialog);
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog)
+                    {
+                        super.onNegative(dialog);
+                    }
+
+                    @Override
+                    public void onNeutral(MaterialDialog dialog)
+                    {
+                        super.onNeutral(dialog);
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

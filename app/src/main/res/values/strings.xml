@@ -14,5 +14,15 @@
 
     <string name="noData">Oops, no result found. :(</string>
 
+    <string name="dialog_title_create">Create contact</string>
+    <string name="dialog_title_edit">Edit contact</string>
+    <string name="dialog_btn_create">Create</string>
+    <string name="dialog_btn_update">Update</string>
+    <string name="dialog_btn_cancel">Cancel</string>
+    <string name="dialog_btn_delete">Delete</string>
+    <string name="dialog_hint_name">Name</string>
+    <string name="dialog_hint_email">Email address</string>
+    <string name="dialog_hint_phone">Phone number</string>
+
     <string name="imageView">imageView</string>
 </resources>
