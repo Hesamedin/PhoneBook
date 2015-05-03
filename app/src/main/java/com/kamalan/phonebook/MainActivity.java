@@ -21,6 +21,7 @@ import com.appspot.my_phonebook_123.phonebookAPI.model.PhoneNumber;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.kamalan.phonebook.endpoint.ContactListEndpoint;
 import com.kamalan.phonebook.endpoint.CreateContactEndpoint;
+import com.kamalan.phonebook.endpoint.DeleteContactEndpoint;
 import com.kamalan.phonebook.utility.Storage;
 
 import java.util.ArrayList;
@@ -165,7 +166,7 @@ public class MainActivity extends FragmentActivity implements
     /**
      *  Load list of Contacts from App Engine
      */
-    private void getContacts()
+    public void getContacts()
     {
         new ContactListEndpoint(this).execute();
     }
@@ -254,7 +255,7 @@ public class MainActivity extends FragmentActivity implements
 
     private void displayEditContactDialog(final Contact contact)
     {
-        new MaterialDialog.Builder(this)
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title(R.string.dialog_title_edit)
                 .customView(R.layout.dialog_contact, true)
                 .positiveText(R.string.dialog_btn_update)
@@ -272,6 +273,9 @@ public class MainActivity extends FragmentActivity implements
                     public void onNegative(MaterialDialog dialog)
                     {
                         super.onNegative(dialog);
+
+                        // Delete contact
+                        new DeleteContactEndpoint(MainActivity.this, contact.getId()).execute();
                     }
 
                     @Override
@@ -281,6 +285,19 @@ public class MainActivity extends FragmentActivity implements
                         dialog.dismiss();
                     }
                 })
-                .show();
+                .build();
+
+        View view = dialog.getCustomView();
+        TextView tvContactName = (TextView) view.findViewById(R.id.etContactName);
+        tvContactName.setText(contact.getCName());
+
+        TextView tvContactEmail = (TextView) view.findViewById(R.id.etContactEmail);
+        tvContactEmail.setText(contact.getCEmail().getEmail());
+
+        TextView tvContactPhone = (TextView) view.findViewById(R.id.etContactPhone);
+        tvContactPhone.setText(contact.getCPhoneNumber().getNumber());
+
+        // display dialog
+        dialog.show();
     }
 }

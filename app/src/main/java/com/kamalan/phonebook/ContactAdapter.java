@@ -40,19 +40,23 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     }
 
     @Override
-    public ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int i)
+    public ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType)
     {
         View itemView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_contact, viewGroup, false);
 
-        return new ContactViewHolder(itemView, i);
+        return new ContactViewHolder(itemView);
     }
 
     @Override
-    public void onBindViewHolder(ContactViewHolder contactViewHolder, int i)
+    public void onBindViewHolder(ContactViewHolder contactViewHolder, int position)
     {
-        Contact contact = mContactList.get(i);
+        Contact contact = mContactList.get(position);
         contactViewHolder.tvContactName.setText(contact.getCName());
         contactViewHolder.tvContactDetails.setText(contact.getCPhoneNumber() + ", " + contact.getCEmail());
+        contactViewHolder.btnCall.setTag(position);
+        contactViewHolder.btnSMS.setTag(position);
+        contactViewHolder.btnEmail.setTag(position);
+        contactViewHolder.btnEdit.setTag(position);
     }
 
     @Override
@@ -70,7 +74,7 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         protected Button btnEmail;
         protected Button btnEdit;
 
-        public ContactViewHolder(View view, int position)
+        public ContactViewHolder(View view)
         {
             super(view);
 
@@ -79,19 +83,15 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
 
             this.btnCall = (Button) view.findViewById(R.id.btnContactCall);
             this.btnCall.setOnClickListener(this);
-            this.btnCall.setTag(position);
 
             this.btnSMS = (Button) view.findViewById(R.id.btnContactSMS);
             this.btnSMS.setOnClickListener(this);
-            this.btnSMS.setTag(position);
 
             this.btnEmail = (Button) view.findViewById(R.id.btnContactEmail);
             this.btnEmail.setOnClickListener(this);
-            this.btnEmail.setTag(position);
 
             this.btnEdit = (Button) view.findViewById(R.id.btnContactEdit);
             this.btnEdit.setOnClickListener(this);
-            this.btnEdit.setTag(position);
         }
 
         @Override
