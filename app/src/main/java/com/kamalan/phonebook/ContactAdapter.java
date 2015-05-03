@@ -33,6 +33,12 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
         this.mListener = listener;
     }
 
+    public void setContactList(List<Contact> contactList)
+    {
+        this.mContactList = contactList;
+        this.notifyDataSetChanged();
+    }
+
     @Override
     public ContactViewHolder onCreateViewHolder(ViewGroup viewGroup, int i)
     {

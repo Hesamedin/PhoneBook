@@ -190,7 +190,7 @@ public class MainActivity extends FragmentActivity implements
             return;
         }
 
-        Log.e(TAG, "size: " + contactList.size());
+        this.mContactAdapter.setContactList(contactList);
     }
 
     /**

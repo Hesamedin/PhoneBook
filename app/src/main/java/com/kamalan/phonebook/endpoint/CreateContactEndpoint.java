@@ -16,7 +16,6 @@ import com.kamalan.phonebook.utility.Storage;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.List;
 
 /**
  * Created by Hesam Kamalan on 5/3/15
