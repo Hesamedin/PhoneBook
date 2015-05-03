@@ -14,8 +14,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.appspot.my_phonebook_123.phonebookAPI.model.Contact;
+import com.appspot.my_phonebook_123.phonebookAPI.model.ContactForm;
+import com.appspot.my_phonebook_123.phonebookAPI.model.Email;
+import com.appspot.my_phonebook_123.phonebookAPI.model.PhoneNumber;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.kamalan.phonebook.endpoint.ContactListEndpoint;
+import com.kamalan.phonebook.endpoint.CreateContactEndpoint;
 import com.kamalan.phonebook.utility.Storage;
 
 import java.util.ArrayList;
@@ -86,9 +90,22 @@ public class MainActivity extends FragmentActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings)
+        // add contact dialog
+        if (id == R.id.action_add_contact)
         {
+            ContactForm form = new ContactForm();
+            form.setUserName("Name 1");
+            form.setUserEmailAddress(new Email().setEmail("name1@example.com"));
+            form.setUserPhoneNumber(new PhoneNumber().setNumber("123456"));
+
+            new CreateContactEndpoint(this, form).execute();
+            return true;
+        }
+
+        // Get contact list
+        if (id == R.id.action_get_contacts)
+        {
+            getContacts();
             return true;
         }
 
@@ -158,7 +175,7 @@ public class MainActivity extends FragmentActivity implements
     }
 
     /**
-     * calls by ContactListEndpoint in order to display contact list result.
+     * Calls by ContactListEndpoint in order to display contact list result.
      *
      * @param contactList
      */
@@ -174,5 +191,19 @@ public class MainActivity extends FragmentActivity implements
         }
 
         Log.e(TAG, "size: " + contactList.size());
+    }
+
+    /**
+     * Calls by CreateContactEndpoint in order to display contact result.
+     *
+     * @param contact
+     */
+    public void onContactCreated(Contact contact)
+    {
+        if (contact != null)
+        {
+            Log.d(TAG, contact.toString());
+            getContacts();
+        }
     }
 }
