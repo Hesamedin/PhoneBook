@@ -52,7 +52,8 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactV
     {
         Contact contact = mContactList.get(position);
         contactViewHolder.tvContactName.setText(contact.getCName());
-        contactViewHolder.tvContactDetails.setText(contact.getCPhoneNumber() + ", " + contact.getCEmail());
+        contactViewHolder.tvContactDetails.setText(contact.getCPhoneNumber().getNumber() +
+                ", " + contact.getCEmail().getEmail());
         contactViewHolder.btnCall.setTag(position);
         contactViewHolder.btnSMS.setTag(position);
         contactViewHolder.btnEmail.setTag(position);
