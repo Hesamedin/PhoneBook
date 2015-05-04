@@ -7,11 +7,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.appspot.my_phonebook_123.phonebookAPI.model.Contact;
@@ -224,16 +226,6 @@ public class MainActivity extends FragmentActivity implements
                 {
                     new CreateContactEndpoint(MainActivity.this, contactForm).execute();
                 }
-
-                // close dialog
-                dialog.dismiss();
-            }
-
-            @Override
-            public void onNeutral(MaterialDialog dialog)
-            {
-                super.onNeutral(dialog);
-                dialog.dismiss();
             }
         }).show();
     }
@@ -253,10 +245,10 @@ public class MainActivity extends FragmentActivity implements
                 if (contactForm != null)
                 {
                     new UpdateContactEndpoint(MainActivity.this, contact.getId(), contactForm).execute();
-                }
 
-                // close dialog
-                dialog.dismiss();
+                    // close dialog
+                    dialog.dismiss();
+                }
             }
 
             @Override
@@ -266,13 +258,6 @@ public class MainActivity extends FragmentActivity implements
 
                 // Delete contact
                 new DeleteContactEndpoint(MainActivity.this, contact.getId()).execute();
-            }
-
-            @Override
-            public void onNeutral(MaterialDialog dialog)
-            {
-                super.onNeutral(dialog);
-                dialog.dismiss();
             }
         }).build();
 
@@ -312,6 +297,30 @@ public class MainActivity extends FragmentActivity implements
         phoneNumber.setNumber(tvContactPhone.getText().toString().trim());
         contactForm.setUserPhoneNumber(phoneNumber);
 
+        // check fields, return null if contact info is not complete
+        if (TextUtils.isEmpty(contactForm.getUserName()))
+        {
+            displayToastMessage(getResources().getString(R.string.toast_blank_contact));
+            return null;
+        }
+
+        if (TextUtils.isEmpty(contactForm.getUserEmailAddress().getEmail()))
+        {
+            displayToastMessage(getResources().getString(R.string.toast_blank_email));
+            return null;
+        }
+
+        if (TextUtils.isEmpty(contactForm.getUserPhoneNumber().getNumber()))
+        {
+            displayToastMessage(getResources().getString(R.string.toast_blank_phone));
+            return null;
+        }
+
         return contactForm;
+    }
+
+    private void displayToastMessage(final String message)
+    {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
     }
 }

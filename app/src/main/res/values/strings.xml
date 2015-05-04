@@ -24,5 +24,9 @@
     <string name="dialog_hint_email">Email address</string>
     <string name="dialog_hint_phone">Phone number</string>
 
+    <string name="toast_blank_contact">Contact name is blank</string>
+    <string name="toast_blank_email">Email address is blank</string>
+    <string name="toast_blank_phone">Phone number is blank</string>
+
     <string name="imageView">imageView</string>
 </resources>
