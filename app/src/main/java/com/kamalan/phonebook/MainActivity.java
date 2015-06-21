@@ -52,7 +52,7 @@ public class MainActivity extends FragmentActivity implements
         llm.setOrientation(LinearLayoutManager.VERTICAL);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.rvCardList);
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         mRecyclerView.setLayoutManager(llm);
 
         this.mContactAdapter = new ContactAdapter(new ArrayList<Contact>(), this);
@@ -212,7 +212,12 @@ public class MainActivity extends FragmentActivity implements
      */
     private void displayCreateContactDialog()
     {
-        new MaterialDialog.Builder(this).title(R.string.dialog_title_create).customView(R.layout.dialog_contact, true).positiveText(R.string.dialog_btn_create).neutralText(R.string.dialog_btn_cancel).callback(new MaterialDialog.ButtonCallback()
+        new MaterialDialog.Builder(this)
+                .title(R.string.dialog_title_create)
+                .customView(R.layout.dialog_contact, true)
+                .positiveText(R.string.dialog_btn_create)
+                .neutralText(R.string.dialog_btn_cancel)
+                .callback(new MaterialDialog.ButtonCallback()
         {
             @Override
             public void onPositive(MaterialDialog dialog)
@@ -232,7 +237,13 @@ public class MainActivity extends FragmentActivity implements
 
     private void displayEditContactDialog(final Contact contact)
     {
-        MaterialDialog dialog = new MaterialDialog.Builder(this).title(R.string.dialog_title_edit).customView(R.layout.dialog_contact, true).positiveText(R.string.dialog_btn_update).neutralText(R.string.dialog_btn_cancel).negativeText(R.string.dialog_btn_delete).callback(new MaterialDialog.ButtonCallback()
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title(R.string.dialog_title_edit)
+                .customView(R.layout.dialog_contact, true)
+                .positiveText(R.string.dialog_btn_update)
+                .neutralText(R.string.dialog_btn_cancel)
+                .negativeText(R.string.dialog_btn_delete)
+                .callback(new MaterialDialog.ButtonCallback()
         {
             @Override
             public void onPositive(MaterialDialog dialog)

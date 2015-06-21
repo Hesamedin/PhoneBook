@@ -23,10 +23,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/FlurryAnalytics-5.5.0.jar')
 
-    compile 'com.android.support:appcompat-v7:22.1.1'
+    compile 'com.android.support:appcompat-v7:22.2.0'
     compile 'com.android.support:cardview-v7:22.1.1'
     compile 'com.android.support:recyclerview-v7:22.1.1'
-    compile 'com.google.android.gms:play-services:7.3.0'
+    compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.afollestad:material-dialogs:0.7.3.1'
 
     compile project(path: ':backend', configuration: 'android-endpoints')
