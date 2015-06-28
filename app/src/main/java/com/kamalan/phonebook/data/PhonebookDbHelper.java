@@ -1,9 +1,10 @@
 package com.kamalan.phonebook.data;
 
 import android.content.Context;
-import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.kamalan.phonebook.data.PhonebookContract.ContactEntry;
 
 /**
  * Created by Hesam Kamalan on 6/21/15
@@ -15,27 +16,39 @@ public class PhonebookDbHelper extends SQLiteOpenHelper
 
     static final String DATABASE_NAME = "phonebook.db";
 
-    public PhonebookDbHelper(Context context)
+    private static PhonebookDbHelper INSTANCE;
+
+    public static synchronized PhonebookDbHelper getInstance(final Context context)
+    {
+        if (PhonebookDbHelper.INSTANCE == null)
+        {
+            PhonebookDbHelper.INSTANCE = new PhonebookDbHelper(context.getApplicationContext());
+        }
+
+        return PhonebookDbHelper.INSTANCE;
+    }
+
+    // Enforce singleton
+    private PhonebookDbHelper(final Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db)
+    public void onCreate(final SQLiteDatabase db)
     {
-        final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE " + PhonebookContract.ContactEntry.TABLE_NAME + " (" +
-                // Why AutoIncrement here, and not above?
-                // Unique keys will be auto-generated in either case.  But for weather
-                // forecasting, it's reasonable to assume the user will want information
-                // for a certain date and all dates *following*, so the forecast data
-                // should be sorted accordingly.
-                // WeatherEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
-                "";
+        ContactEntry.onCreate(db);
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion)
+    public void onUpgrade(final SQLiteDatabase db, final int oldVersion, final int newVersion)
     {
-
+        // This database is only a cache for online data, so its upgrade policy is
+        // to simply to discard the data and start over
+        // Note that this only fires if you change the version number for your database.
+        // It does NOT depend on the version number for your application.
+        // If you want to update the schema without wiping data, commenting out the next line
+        // should be your top priority before modifying this method.
+        ContactEntry.onUpgrade(db, oldVersion, newVersion);
     }
 }
